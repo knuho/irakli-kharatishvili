@@ -2,15 +2,15 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>Users</title>
+	<title>Address Book</title>
 	<link rel="stylesheet" type="text/css" href="jstyle.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
 	<div id="header">
-		<h1>Users Data</h1>
+		<h1>Address Book</h1>
 	</div>
-	<script>
+<script>
 		$(document).ready(function(){
 			getData();
 			function getData (){
@@ -32,11 +32,10 @@
 								<td><input type = "radio" name="delete"/> </td>\
 								<input type = "hidden" class = "row_id" value = ' + data.arr[i].id + '>\
 								 </tr>';
-
-						}
 						$('#person_table').html(htmlData);
 					}
-				});
+				}
+				})
 			}
 			$('#send').on('click', function(){
 				var firstname = $('#frst').val();
@@ -48,6 +47,7 @@
 					url: 'jinsert.php',
 					data: {'frst': firstname, 'lst': lastname, 'ad': address, 'em': email, 'ins': 1},
 					success: function(data)  {
+						console.log(data)
 						var answer = $(data).filter('#ans').text();
 						alert(answer);
 						getData();
@@ -57,70 +57,64 @@
 						$('#em').val('');
 					}
 				});
-
 			});
-			$(document).on('click','input[name="update"]',function(){
-			var firstname = $(this).parent().siblings(".firstname").text();
-			var lastname = $(this).parent().siblings(".lastname").text();
-			var address = $(this).parent().siblings(".address").text();
-			var email = $(this).parent().siblings(".email").text();
-			var id = $(this).parent().siblings(".row_id").val();
+			$(document).on('click', 'input[name="update"]',function(){
+				var firstname=$(this).parent().siblings(".firstname").text();
+				var lastname=$(this).parent().siblings(".lastname").text();
+				var address=$(this).parent().siblings(".address").text();
+				var email=$(this).parent().siblings(".email").text();
+				var id =$(this).parent().siblings(".row_id").val();
 
-			var data = '<input type = "text" class="nm" value = ' + firstname +'>\
-				<input type="text" class = "srnm" value = ' + lastname + '>\
-				<input type="text" class = "ad" value = ' + address + '>\
-				<input type="text" class = "em" value = ' + email + '>\
-				<input type="hidden" class = "row_id" value = ' + id + '>\
-				<input type="button" class = "upd" value = "change">';
+				var data = '<input type ="text" class="nm" value= ' + firstname +'>\
+					<input type ="text" class="srnm" value =' + lastname +'>\
+					<input type ="text" class="address" value =' + address +'>\
+					<input type ="text" class="email" value =' + email +'>\
+					<input type = "hidden" class="row_id" value ='+id+ '>\
+					<input type="button" class="upd" value="change">';
 
 				$('#edit').html(data);
+
 			});
+			$(document).on('click', '.upd', function(){
 
-		$(document).on('click','.upd', function(){ 
-			var nameVal = $(this).siblings('.nm').val();
-			var surnameVal = $(this).siblings('.srnm').val();
-			var addressVal = $(this).siblings('.ad').val();
-			var emailVal = $(this).siblings('.em').val();
-			var id = $(this).siblings('.row_id').val();
+				var nameVal =$(this).siblings('.nm').val();
+				var surnameVal = $(this).siblings('.srnm').val();
+				var addressVal =$(this).siblings('.address').val();
+				var emailVal=$(this).siblings('.email').val();
+				var id =$(this).siblings('.row_id').val();
 
-			$.ajax ({
-				type:"POST",
-				url:"jinsert.php",
-				data:{"frst":nameVal, "lst":surnameVal, "ad":addressVal, "em":emailVal, 
-				"ident":id, "update_key":3},
-				success:function(data){
-					$("#edit").hide();
-					var answer= $(data).filter('#ans').text();
-					alert(answer);
-					getData();
-				}
-			})
+				$.ajax({
+					type:"POST",
+					url:"jinsert.php",
+					data:{'frst':nameVal, 'lst':surnameVal, 'ad':addressVal, 'em':emailVal, "ident":id, "update_key":3},
+					success:function(data){
+						var answer =$(data).filter('#ans').text();
+						alert(answer);
+						getData();
+						$("#edit").hide();
+					}
+				});
+			});
+			$(document).on('click', 'input[name="delete"]', function(){
+				var id=$(this).parent().siblings(".row_id").val();
+				var confDel=confirm("Are you sure to delete?");
 
-		})
-		$(document).on('click','input[name="delete"]',function(){
-			var id = $(this).parent().siblings(".row_id").val();
-
-				var confDel = confirm('Are you sure to delete?');
-				if(confDel == true){
+				if (confDel == true){
 					$.ajax({
-						type: "POST",
+						type:"POST",
 						url: "jinsert.php",
-						data: {"ident":id, "delete_key":3},
+						data:{"ident":id, "delete_key":3},
 						success:function(data){
-							var answer = $(data).filter('#ans').text();
+							var answer= $(data).filter('#ans').text();
 							alert(answer);
 							getData();
+						}
+
+					})
 				}
 			})
-
-		}		
-	}) 
-
-	});
-		
-			
+		});	
 	</script>
-	
 	<form>
 		<div id="register">
 		<label>Firstname</label>
@@ -134,23 +128,23 @@
 		<input type="button" id='send' name="put" value="send">
 		</div>
 	</form>
-	
-	
+	<hr>
 	<table>
 		<thead>
 				<tr>
 					<div class="list">
+						<h2> Address Book Data </h2>
 					<th class="firstname"> First Name</th>
 					<th class="lastname"> Last Name</th>
 					<th class="address"> Address</th>
 					<th class="email"> Email</th>
-					<th>update</th>
-					<th>delete</th>
+					<th> update </th>
+					<th> delete </th>
 					</div>
 				</tr>
 			<tbody id="person_table"></tbody>
 		</thead>
 	</table>
-	<div id='edit'></div>
+	<div id="edit"></div>
 </body>
 </html>
